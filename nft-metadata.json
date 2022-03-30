@@ -1,0 +1,20 @@
+{
+    "attributes": [
+        {
+        "trait_type": "Specy",
+        "value": "Cat"
+        },
+        {
+        "trait_type": "Breed",
+        "value": "Orange"
+        },
+        {
+        "trait_type": "Eye color",
+        "value": "Black"
+        }
+    ],
+    "description": "orange cat.",
+    "image": "https://gateway.pinata.cloud/ipfs/QmZp7AKPM5R9LwTc6Z7YkeVgVKFvXh2kzasDQ5ZtVwbhw6",
+    "name": "Simon"
+  }
+  

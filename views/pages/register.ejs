@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/header'); %>
+</header>
+
+<main>
+    <div class="jumbotron">
+        <h1>Register</h1>
+       
+        <form method="post" action="/register" >
+            <p>
+                <label>Username:</label>
+                <input type="text" name="name" id="name">
+            </p>
+            <p>
+                <label>Password:</label>
+                <input type="password" name="password" id="password">
+            </p>
+            <p>
+                <label>Confirm password:</label>
+                <input type="password" name="confirmPassword" id="confirmPassword">
+            </p>
+            <p>
+                <input type="submit" value="Register">
+            </p>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>
