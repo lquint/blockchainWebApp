@@ -6,15 +6,15 @@
         },
         {
         "trait_type": "Breed",
-        "value": "Orange"
+        "value": "Dark"
         },
         {
         "trait_type": "Eye color",
-        "value": "Black"
+        "value": "White"
         }
     ],
-    "description": "orange cat.",
-    "image": "https://gateway.pinata.cloud/ipfs/QmZp7AKPM5R9LwTc6Z7YkeVgVKFvXh2kzasDQ5ZtVwbhw6",
-    "name": "Simon"
+    "description": "Revengeful cat.",
+    "image": "img/darkOrangeCat.png",
+    "name": "Nomis"
   }
   

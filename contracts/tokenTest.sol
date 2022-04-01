@@ -4,6 +4,14 @@ import "./interfaceERC721.sol";
 
 contract tokenTest is tokenData, ERC721, ERC165 {
     
+    function getVersion() public pure returns (string memory){
+        return "0.7";
+    }
+
+    function getName() public pure returns (string memory){
+        return "tokenTest";
+    }
+
     function balanceOf(address _owner) public view virtual override returns (uint256){
         return tokenBalance[_owner];
     }
@@ -85,20 +93,23 @@ contract tokenTest is tokenData, ERC721, ERC165 {
 			mintedAt: uint64(block.timestamp)
     	});
         require(to != address(0));
-        //require(tokenList.length<maxCount, "");
 		tokenList.push(token);
 		tokenId = tokenList.length;
         tokenURIs[tokenId]=tokenURI;
+        tokenCollection[to].push(tokenURI);
         tokenBalance[to] += 1;
         tokenOwner[tokenId] = to;
         emit Transfer(address(0), to, tokenId);
     } 
 
-    function deleteToken(address to) public {
-        delete tokenOwner[0];
-        tokenBalance[to] -= 1;
-        tokenList.pop();
-        delete tokenURIs[0];
+    function resetTokens(address to) public {
+        for (uint i= tokenList.length; i>0; i--){
+            tokenList.pop();
+            delete tokenURIs[i];
+            tokenBalance[to] -=1 ;
+            delete tokenOwner[i];
+        }
+        delete tokenCollection[to];
         
     }
 
@@ -111,6 +122,10 @@ contract tokenTest is tokenData, ERC721, ERC165 {
             }
         }    
         return uri;
+    }
+
+    function getURIList(address owner) public view returns(string[] memory){
+        return tokenCollection[owner] ;
     }
 
     function getTokenID() public view returns (uint256){

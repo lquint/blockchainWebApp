@@ -1,15 +1,15 @@
 {
   "contractName": "tokenData",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/tokenData.sol\":\"tokenData\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/tokenData.sol\":{\"keccak256\":\"0x7f3871ccd9ef3c9d4e036deb9fab0d5740e0293321fc88d53e02a473befa1ff7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://922375ebd9394aa15af555b863ea539c0d6eff7335976e19653f57dcbf808e1c\",\"dweb:/ipfs/QmWpSWaM2AnpRWwyuRCBbGcKfhzVvFu9CCecfJKzy34kkq\"]}},\"version\":1}",
-  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220d48719725d140a19b2d39584af8af2bcc51de33b3a01d60d9639fefff6c54a0464736f6c634300080c0033",
-  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220d48719725d140a19b2d39584af8af2bcc51de33b3a01d60d9639fefff6c54a0464736f6c634300080c0033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/tokenData.sol\":\"tokenData\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/tokenData.sol\":{\"keccak256\":\"0x16c9eff1f56fe7c3904c6f9a0ceced41f1315e4d0418bdaafe8f6ca97676b123\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c770fa3f413d99a7ba2a83d521ade652c63bb292961f210c721d6a42bfca845a\",\"dweb:/ipfs/QmPVnvygqYAdwLWz7CRPtAQUW83F18GNq1ziccw2VJSCsN\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220b1ecd373ebb06cde0d49a94667382febe0479cd7ff91f24a4b9d4e08017c6fdc64736f6c634300080c0033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220b1ecd373ebb06cde0d49a94667382febe0479cd7ff91f24a4b9d4e08017c6fdc64736f6c634300080c0033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "60:722:2:-:0;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "60:722:2:-:0;;;;;",
-  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\ncontract tokenData {\r\n\r\n    \r\n    struct Token{\r\n        address mintedBy;\r\n        uint64 mintedAt;\r\n    }\r\n\r\n    Token[] tokenList;\r\n    mapping (address => string[] ) tokenCollection;\r\n    mapping ( uint256 => string ) tokenURIs; // mapping id token => URI du token\r\n    mapping ( uint256 => address ) tokenOwner; //mapping id token => adresse du propriétaire\r\n    mapping ( address => uint64 ) tokenBalance; // mapping addresse propriétaire => nombre de tokens possédés\r\n    mapping (uint => address) tokenApprovals; // mapping id token => adresse approuvée\r\n    mapping ( address => mapping( address => bool)) operatorApprovals; // mapping de propriétaire à l'opérator approval pour les adresses des autres\r\n}",
+  "sourceMap": "60:728:2:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "60:728:2:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\ncontract tokenData {\r\n\r\n    \r\n    struct Token{\r\n        address mintedBy;\r\n        uint64 mintedAt;\r\n    }\r\n\r\n    Token[] tokenList;\r\n    mapping (address => string[] ) tokenCollection;\r\n    mapping ( uint256 => string ) tokenURIs; // mapping id token => URI du token\r\n    mapping ( uint256 => address ) tokenOwner; //mapping id token => adresse du propriétaire\r\n    mapping ( address => uint64 ) tokenBalance; // mapping addresse propriétaire => nombre de tokens possédés\r\n    mapping (uint => address) tokenApprovals; // mapping id token => adresse approuvée\r\n    mapping ( address => mapping( address => bool)) operatorApprovals; // mapping de propriétaire à l'opérator approval pour les adresses des autres\r\n    \r\n}",
   "sourcePath": "C:\\Users\\Administrator\\Desktop\\tokenAccount\\contracts\\tokenData.sol",
   "ast": {
     "absolutePath": "project:/contracts/tokenData.sol",
@@ -466,11 +466,11 @@
           }
         ],
         "scope": 208,
-        "src": "60:722:2",
+        "src": "60:728:2",
         "usedErrors": []
       }
     ],
-    "src": "33:749:2"
+    "src": "33:755:2"
   },
   "legacyAST": {
     "absolutePath": "project:/contracts/tokenData.sol",
@@ -927,11 +927,11 @@
           }
         ],
         "scope": 208,
-        "src": "60:722:2",
+        "src": "60:728:2",
         "usedErrors": []
       }
     ],
-    "src": "33:749:2"
+    "src": "33:755:2"
   },
   "compiler": {
     "name": "solc",
@@ -939,7 +939,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.6",
-  "updatedAt": "2022-03-30T14:20:09.695Z",
+  "updatedAt": "2022-03-31T22:11:48.061Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

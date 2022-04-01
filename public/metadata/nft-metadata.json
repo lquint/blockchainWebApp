@@ -1,0 +1,20 @@
+{
+    "attributes": [
+        {
+        "trait_type": "Specy",
+        "value": "Cat"
+        },
+        {
+        "trait_type": "Breed",
+        "value": "Orange"
+        },
+        {
+        "trait_type": "Eye color",
+        "value": "Black"
+        }
+    ],
+    "description": "Emblematic orange cat with emerald like background",
+    "image": "img/orangeCat.png",
+    "name": "Simon"
+  }
+  

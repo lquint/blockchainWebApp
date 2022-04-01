@@ -16,4 +16,5 @@ contract tokenData {
     mapping ( address => uint64 ) tokenBalance; // mapping addresse propriétaire => nombre de tokens possédés
     mapping (uint => address) tokenApprovals; // mapping id token => adresse approuvée
     mapping ( address => mapping( address => bool)) operatorApprovals; // mapping de propriétaire à l'opérator approval pour les adresses des autres
+    
 }
