@@ -3,30 +3,14 @@
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner();
 
-
-
-
-
-
-  
-
-const daiAddress = "0xb40Bc89309dDb4e2969E512617D7F407AD871f54";
-const myContractABI= [
-    "function mintToken(address to, string memory tokenURI) external returns (uint tokenId)",
-    "function deleteToken(address to) public",
-    "function balanceOf(address _owner) public view returns (uint256)",
-    "function getTokenID() public view returns (uint256)",
-  ]
+const daiAddress = "0x6e4873A6ea59d4Af91EC6ef32307300F8D4728D9";
 
 async function getABI(){
     return fetch('/tokenTest.json')
-.then(function(response) {
-  return response.json();
-})
-    
+        .then(function(response) {
+        return response.json();
+        })  
 }
-
-
 
 
 
@@ -41,7 +25,6 @@ const tokenDisplay = document.getElementById("tokenDisplay")
 
 
 window.onload=function(){
-    
     var x=document.getElementById('myButton')
     var y=document.getElementById('metaBtn')
     var connect = document.getElementById('connectToWallet')
@@ -49,22 +32,21 @@ window.onload=function(){
     var tokenDelete = document.getElementById('deleteBtn')
     var tokenPrint = document.getElementById('printBtn')
     var tokenPrintURI = document.getElementById('printURIBtn')
+    var tokenTransfer = document.getElementById('transferBtn')
     // add click event listener on the connect button
-
     x.addEventListener("click", metamaskInstalled)
     y.addEventListener("click", getAccount)
     tokenMint.addEventListener("click", mintFirstNFT)
-    tokenDelete.addEventListener("click", deleteFirstNFT)
+    tokenDelete.addEventListener("click", deleteUserNFT)
     tokenPrint.addEventListener("click", printTokenId)
     tokenPrintURI.addEventListener("click",printTokenURIs)
+    tokenTransfer.addEventListener("click",function() { transferNFT("0xA69E6a7FE3461961AC77a966A19228A9BD1A256e") } )
     connect.addEventListener('click', async (e) => {
         e.preventDefault()
     
         let getAccountAddress = await getAccount()
         if (getAccountAddress.length < 1) {
-            getAccountAddress = await getAccount()
-            account.innerHTML = getAccountAddress
-            balance.innerHTML = await getBalance()
+            console.log("Incorrect Address")
         } else {
             console.log( getAccountAddress)
             account.innerHTML = getAccountAddress
@@ -74,6 +56,8 @@ window.onload=function(){
         }
         console.log(getAccountAddress)
     })
+
+    
 }
 
 
@@ -82,17 +66,16 @@ window.onload=function(){
 const getAccount =  async() => {
     try {
         let account= await ethereum.request({method: 'eth_requestAccounts'})
-        return account
+        return account[0]
     } catch (error) {
         console.log('Error connecting to metamask account \n', error)
         return error
     }
 }
 
-getABI().then((abi) =>{
-    console.log(abi)
 
-})
+
+// modify NFT property
 
 async function mintFirstNFT(){
 
@@ -121,12 +104,22 @@ async function mintFirstNFT(){
        
 }
 
-async function deleteFirstNFT(){
+async function deleteUserNFT(){
     
     await provider.send("eth_requestAccounts", []);
     getABI().then(async (contractABI)=>{
         const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
-        const tx =  daiContract.deleteToken("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703")
+        const tx =  daiContract.resetTokens(getAccount())
+    })
+    
+}
+
+async function transferNFT(to){
+    
+    await provider.send("eth_requestAccounts", []);
+    getABI().then(async (contractABI)=>{
+        const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
+        const tx =  daiContract.transferFrom(getAccount(),to,1)
     })
     
 }
@@ -145,11 +138,9 @@ async function printTokenId(){
     
 }
 
-async function getTokenBalance(user){new Promise(function(resolve, reject) {
 
-    resolve(getABI())
-  
-  }).then(async function(contractABI){
+async function getTokenBalance(user){
+    return getABI().then(async function(contractABI){
         const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
         return daiContract.balanceOf(user)
     })
@@ -165,16 +156,11 @@ async function getTokenBalance(user){new Promise(function(resolve, reject) {
 async function printTokenURIs(){
     getABI().then(async (contractABI)=>{
         const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
-        console.log(await daiContract.getURIs("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703"))
         console.log(await daiContract.getURIList("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703"))
-        return await daiContract.getURIs("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703")
+        return await daiContract.getURIList("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703")
     })
 }
 
-getTokenBalance("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703").then(function(balance){
-    console.log("My token balance =" + balance)
-})
-console.log(getTokenBalance("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703"))
 async function setTokenName(){
     getABI().then(async (contractABI)=>{
         const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
@@ -185,22 +171,6 @@ async function setTokenName(){
     })
 }
 
-function setTokenDisplay(user){
-    getABI().then(async (contractABI)=>{
-        var html=""
-        const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
-        const uriList= await daiContract.getURIList(user)
-        
-        console.log(await getTokenBalance(user))
-        for (let i=0;i< 2; i++){
-            const json = await (await fetch(uriList[i])).json()
-            console.log(await json.name)
-            html += await "<div class=\"card\" style=\"width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "</p><a href=\"#\" class=\"btn btn-primary\">Go somewhere</a></div></div>"
-        }
-        html="<div id=\"displayContainer\" class=\"d-flex flex-row flex-wrap\">" + html + "</div>"
-        tokenDisplay.innerHTML=await html
-})
-}
 
 // checks if user has metamask extension (logs msg atm)
 function metamaskInstalled(){
@@ -255,7 +225,9 @@ ethereum.on('accountsChanged', async (accounts) => {
 ethereum.on('connect', async (chainId) => {
     var name = await setTokenName()
     ethBalance.innerText =  await getBalance()
-    setTokenDisplay("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703")
+    const address =  getAccount()
+    setTokenDisplay( await address)
+    //setTokenDisplay("0xA69E6a7FE3461961AC77a966A19228A9BD1A256e")
     console.log(chainId)
     console.log('Metamask Connected:', ethereum.isConnected())
 })
@@ -266,3 +238,41 @@ ethereum.on('disconnect', (chainId) => {
     console.log('Metamask Connected:', ethereum.isConnected())
     alert('Metamask is not connected to ethereum network. Retry!')
 })
+
+
+//  DISPLAY ELEMENTS //
+//displays NFTs as card elements (note : add scrollable, max height etc ..)
+function setTokenDisplay(user){
+    getABI().then(async (contractABI)=>{
+        var html=""
+        const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
+        const uriList= await daiContract.getURIList(user)
+        const tokenBalance=await getTokenBalance(user)
+        for (let i=0;i< tokenBalance; i++){
+            if(uriList[i]!=""){
+                const json = await (await fetch(uriList[i])).json()
+                console.log(await json.name)
+                html += await "<div class=\"card\" style=\"width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><form action=\"/indexLoggedIn\" method=\"post\"><input type=\"hidden\" name=\"contractAddress\" id=\"contractAddress\" value=\""+daiAddress+"\"><input type=\"hidden\" name=\"tokenId\" id=\"tokenId\" value=\""+i+"\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"\"><img id=\"star\" src=\"img/unactive_star.png\"></button></form></div></div></div>"
+                
+            }
+            
+        }
+        html="<p>You have "+tokenBalance +" NFT<div id=\"displayContainer\" class=\"d-flex flex-row flex-wrap\">" + html + "</div>"
+        tokenDisplay.innerHTML=await html
+        const favButtons =await document.querySelectorAll("#fav-btn")
+        console.log(favButtons.length)
+        for(let i=0;i<favButtons.length;i++){
+            favButtons[i].addEventListener("click",function() {
+                favButtons[i].classList.toggle("active");
+                if(favButtons[i].getAttribute("class")=="active"){
+                    favButtons[i].innerHTML="<img src=\"img/star.png\">"
+                    favButtons[i].parentElement.parentElement.parentElement.parentElement.setAttribute("style","order:-1000; width: 18rem; ")
+                } else {
+                    favButtons[i].innerHTML="<img src=\"img/unactive_star.png\">"
+                    console.log(favButtons[i].parentElement.parentElement.parentElement.parentElement.getAttribute("style"))
+                    favButtons[i].parentElement.parentElement.parentElement.parentElement.setAttribute("style","order:1000; width: 18rem; ")
+                }
+            })
+        }
+    })
+}

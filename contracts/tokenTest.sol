@@ -5,7 +5,7 @@ import "./interfaceERC721.sol";
 contract tokenTest is tokenData, ERC721, ERC165 {
     
     function getVersion() public pure returns (string memory){
-        return "0.7";
+        return "0.9";
     }
 
     function getName() public pure returns (string memory){
@@ -42,12 +42,33 @@ contract tokenTest is tokenData, ERC721, ERC165 {
         require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
     }
 
+    function remove(uint index, string[] memory array )  public pure  {
+        require(index<array.length, "Index out of bounds");
+
+        for (uint i = index; i<array.length-1; i++){
+            array[i] = array[i+1];
+        }
+        delete array[array.length-1];
+    }
+
     function _transfer(address from, address to, uint256 tokenId) internal virtual {
+        
         require(ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
         require(to != address(0), "ERC721: transfer to the zero address");
         // Clear approvals from the previous owner
         _approve(address(0), tokenId);
        tokenOwner[tokenId] = to;
+       uint n=tokenCollection[from].length;
+       tokenBalance[from]--;
+       uint i=0;
+       while (i<n){
+           if(keccak256(abi.encodePacked(tokenCollection[from][i])) == keccak256(abi.encodePacked(tokenURIs[tokenId]))){
+               delete tokenCollection[from][i];
+               remove(i,tokenCollection[from]);
+               i=n;
+           }
+           else{i++;}
+       }
         emit Transfer(from, to, tokenId);
     }
 
@@ -160,5 +181,6 @@ contract tokenTest is tokenData, ERC721, ERC165 {
             assembly { size := extcodesize(account) }
             return size > 0;
         }*/
+        return true;
     }
 }

@@ -2,3 +2,27 @@
     background-color: blue;
     height:200%;
 }
+
+
+#fav-btn{
+  border-style: none;
+  outline: none;
+  font-size: 10%;
+  background-color: white;
+}
+
+#id{
+  width: 10%;
+  height: 10%;
+}
+
+.minicontainer {
+  width: 2em;
+  height: 2em;
+}
+
+/* Resize images */
+.minicontainer img {
+  width: 100%;
+  height: auto;
+}

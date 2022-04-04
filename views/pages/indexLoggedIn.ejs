@@ -21,7 +21,6 @@
         <h1>This is great</h1>
         <h2>Variable</h2>
 
-        </ul>
         <p>Welcome to templating using EJS</p>
             <button id="myButton" class="btn btn-primary"">Metamask Installed ?</button>
             <button id="metaBtn" class="btn btn-primary"">Connect to Metamask</button>
@@ -29,16 +28,25 @@
             <button id="mintBtn" class="btn btn-primary" type="submit">MINT</button>
     
             <button id="deleteBtn" class="btn btn-primary" type="submit">DELETE</button>
-
+            <button id="transferBtn" class="btn btn-primary" type="submit">TRANSFER</button>
             <button id="printBtn" class="btn btn-primary" type="submit">PRINT</button>
             <button id="printURIBtn" class="btn btn-primary" type="submit">SHOW URIS</button>
+            
+            
 
 
-
-    </div>
-    <div>
         
+
+
+
+
+
+
+
+
+
     </div>
+
     <div>
         <p>Network ID: <span id="networkId"></span></p>
         <p>Chain ID: <span id="chainId"></span></p>
@@ -55,6 +63,6 @@
     <%- include('../partials/footer'); %>
 </footer>
 
-<script src='indexLoggedIn.js'></script>
+<script src='/indexLoggedIn.js' ></script>
 </body>
 </html>

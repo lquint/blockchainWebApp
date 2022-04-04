@@ -50,17 +50,18 @@ const daiWithSigner = daiContract.connect(signer);
 function setDB(){
     dbo.createCollection("customers", function(err, res) {
         if (err) throw err;
-        console.log("Collection created!");
+        console.log("Users created!");
         
       });
 }
+
+
 
 
 MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     dbo = db.db("mydb");
     console.log("connected to our DB !")
-    
     });
 
 app.use(session({
@@ -169,7 +170,6 @@ app.post('/login', async (req,res) =>  {
             req.session.user = user.name
             console.log(req.session)
             sessionUser=req.session.user
-            sessionSave=req.session
             res.redirect('/')
         } else {
             res.send('Authentification failed')
@@ -193,30 +193,28 @@ app.post('/register', async (req,res) => {
         }
     } catch {
         res.status(500).send()
+        const user= {name:obj.name , password: hashedPassword}
+        dbo.collection("customers").insertOne(user)
     }
     
 })
 
-app.post('/indexLoggedIn/mint', (req,res) => {
+app.post('/indexLoggedIn', async (req,res) => {
     try{
-        printTokenId()
-        mintFirstNFT()
-        printTokenId()
-    } catch {
-        res.status(500).send()
+        const favorite = JSON.parse(JSON.stringify(req.body));
+        const fav= {user:req.session.user , tokenId: favorite.tokenId, contractAddress: favorite.contractAddress}
+        var favoriteDB = await dbo.collection("favoriteTokens").findOne(fav)
+        console.log("found"+await favoriteDB)
+        if (favoriteDB) {
+            dbo.collection("favoriteTokens").deleteOne(fav)
+        } else {
+            dbo.collection("favoriteTokens").insertOne(fav)
+        }
+    } catch(err) {
+        console.log(err)
+        res.send("dajzjda")
     }
     
-})
-
-app.post('/indexLoggedIn/delete', (req,res) => {
-    printTokenId()
-    deleteFirstNFT()
-    printTokenId()
-})
-
-app.post('/indexLoggedIn/print', (req,res) => {
-    printTokenId()
-
 })
 
 app.listen(3000) 
