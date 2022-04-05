@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const session = require('express-session')
 const ethers = require('ethers');  
 const BigNumber = require('bignumber.js');
+const req = require('express/lib/request')
 require("dotenv").config();
 const endpoint = `https://rinkeby.infura.io/v3/${process.env.INFURIA_KEY}`;
 
@@ -137,12 +138,19 @@ app.get('/logout',(req,res) => {
     res.redirect('/');
 });
 
+
+
 // index page when logged in
-app.get('/indexLoggedIn', function(req, res) {
+app.get('/indexLoggedIn', async function(req, res) {
+    var favorites =[]
+    favorites= await dbo.collection("favoriteTokens").find({user:req.session.user}).toArray()
+    console.log(favorites)
     res.render('pages/indexLoggedIn', {
         sessionUser : req.session.user,
+        favoriteList : JSON.stringify(favorites),
     })
 });
+
 
 // login page
 app.get('/login', function(req, res) {
@@ -210,6 +218,7 @@ app.post('/indexLoggedIn', async (req,res) => {
         } else {
             dbo.collection("favoriteTokens").insertOne(fav)
         }
+        res.end()
     } catch(err) {
         console.log(err)
         res.send("dajzjda")

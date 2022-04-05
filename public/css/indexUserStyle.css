@@ -3,6 +3,23 @@
     height:200%;
 }
 
+#connected{background-color: rgb(0, 204, 0);
+border-style: none;}
+
+#cardContainer{
+}
+
+#tokenBalanceUser{
+  position:absolute;
+  align-self: end;
+  z-index: 9;
+  order: -100000;
+}
+
+#containerBoard{
+  background-color: gainsboro;
+  margin-top:5em;
+}
 
 #fav-btn{
   border-style: none;

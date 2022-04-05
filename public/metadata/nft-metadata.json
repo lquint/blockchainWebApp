@@ -15,6 +15,7 @@
     ],
     "description": "Emblematic orange cat with emerald like background",
     "image": "img/orangeCat.png",
-    "name": "Simon"
+    "name": "Simon",
+    "tokenId": "0"
   }
   

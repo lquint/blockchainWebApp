@@ -1,4 +1,5 @@
 
+
 //import { ethers } from "ethers";
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner();
@@ -14,48 +15,41 @@ async function getABI(){
 
 
 
-const network = document.getElementById('networkId')
-const chainId = document.getElementById('chainId')
-const account = document.getElementById('accountId')
-const balance = document.getElementById('balance')
-const ethBalance = document.getElementById('ethBalance')
-const tokenName= document.getElementById("tokenName")
 const tokenDescription= document.getElementById("tokenDescription")
 const tokenDisplay = document.getElementById("tokenDisplay")
-
-
-window.onload=function(){
-    var x=document.getElementById('myButton')
-    var y=document.getElementById('metaBtn')
-    var connect = document.getElementById('connectToWallet')
+const welcomeMessage= document.getElementById("welcomeMessage")
+const dropdownUser = document.getElementById("dropdownUser")
+let network = document.getElementById('networkId')
+let chainId = document.getElementById('chainId')
+let account = document.getElementById('accountId')
+let balance = document.getElementById('balance')
+const ethBalance = document.getElementById('ethBalance')
+window.onload=async function(){
+    //var x=document.getElementById('myButton')
+    //var y=document.getElementById('metaBtn')
     var tokenMint = document.getElementById('mintBtn')
     var tokenDelete = document.getElementById('deleteBtn')
     var tokenPrint = document.getElementById('printBtn')
     var tokenPrintURI = document.getElementById('printURIBtn')
     var tokenTransfer = document.getElementById('transferBtn')
+    if(!ethereum.isConnected){
+        welcomeMessage.innerHTML="<p>Please install and connect to Metamask to have access to your data</p>"
+        dropdownUser.innerHTML=""
+
+    } else {
+        welcomeMessage.innerHTML=""//"<p>Connected to "+await getNetworkName()+"</p>"
+    }
+    
+    
     // add click event listener on the connect button
-    x.addEventListener("click", metamaskInstalled)
-    y.addEventListener("click", getAccount)
+    //x.addEventListener("click", metamaskInstalled)
+    //y.addEventListener("click", getAccount)
     tokenMint.addEventListener("click", mintFirstNFT)
     tokenDelete.addEventListener("click", deleteUserNFT)
     tokenPrint.addEventListener("click", printTokenId)
     tokenPrintURI.addEventListener("click",printTokenURIs)
     tokenTransfer.addEventListener("click",function() { transferNFT("0xA69E6a7FE3461961AC77a966A19228A9BD1A256e") } )
-    connect.addEventListener('click', async (e) => {
-        e.preventDefault()
     
-        let getAccountAddress = await getAccount()
-        if (getAccountAddress.length < 1) {
-            console.log("Incorrect Address")
-        } else {
-            console.log( getAccountAddress)
-            account.innerHTML = getAccountAddress
-            balance.innerHTML = await getBalance()
-            network.innerHTML = await getNetworkId()
-            chainId.innerHTML = await getChainId()
-        }
-        console.log(getAccountAddress)
-    })
 
     
 }
@@ -68,12 +62,26 @@ const getAccount =  async() => {
         let account= await ethereum.request({method: 'eth_requestAccounts'})
         return account[0]
     } catch (error) {
+        alert("Please connect to Metamask")
         console.log('Error connecting to metamask account \n', error)
         return error
     }
 }
 
 
+async function getNetworkName(){
+    const chainId=await getChainId()
+    const networkId=await getNetworkId()
+    console.log([chainId,networkId])
+    switch (chainId,networkId) {
+        case ('4','4'):
+          return "Rinkeby"
+        case ( '1','1'):
+            return "Mainnet"
+        default:
+          return "default"
+      }
+}
 
 // modify NFT property
 
@@ -88,7 +96,7 @@ async function mintFirstNFT(){
             try {
             console.log("CONTRACT ABI !" + contractAbi)
             const daiContract =  await new ethers.Contract(daiAddress, contractAbi.abi, signer);
-            const tx =  daiContract.mintToken("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703",'metadata/nft-metadata-darkC.json')
+            const tx =  daiContract.mintToken("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703",'metadata/nft-metadata.json')
             console.log(`Transaction hash: ${tx.hash}`);
 
             const receipt = await tx.wait();
@@ -138,6 +146,15 @@ async function printTokenId(){
     
 }
 
+async function printVersion(){
+    getABI().then(async (contractABI)=>{
+        const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
+        daiContract.getVersion().then((version)=>{
+            console.log("Version : "+ version)
+        })
+    })
+}
+
 
 async function getTokenBalance(user){
     return getABI().then(async function(contractABI){
@@ -161,12 +178,12 @@ async function printTokenURIs(){
     })
 }
 
+//transform to getTokenName, for more generic use
 async function setTokenName(){
     getABI().then(async (contractABI)=>{
         const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
         const url= await daiContract.getURIList("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703")
         const json = await (await fetch(url[0])).json()
-        tokenName.innerText= await json.name
         return await json.name
     })
 }
@@ -176,17 +193,19 @@ async function setTokenName(){
 function metamaskInstalled(){
     var isMetaMaskInstalled = () => ethereum.isMetaMaskInstalled
     if (isMetaMaskInstalled){
-        console.log('Metamask is installed !')
+        return true
     } else {
-        alert('Install Metamask extension to interact with our application')
+        //alert('Install Metamask extension to interact with our application')
+        return false
     }
 }
 
+console.log("Metamask installé ? : "+metamaskInstalled())
 
 
 // function to get metamask chainID
 const getChainId = async () => {
-    return await ethereum.request({method: 'eth_chainId'})
+    return parseInt(await ethereum.request({method: 'eth_chainId'}),16)
 }
 
 // function to get metamask networkId
@@ -222,14 +241,15 @@ ethereum.on('accountsChanged', async (accounts) => {
 })
 
 // event triggered when metamask is connected to chain and can make rpc request
-ethereum.on('connect', async (chainId) => {
-    var name = await setTokenName()
+ethereum.on('connect', async () => {
+    dropdownUser.innerHTML="<div class=\"dropdown\"><a id=\"connected\" class=\"btn btn-secondary dropdown-toggle\" href=\"#\" role=\"button\" id=\"dropdownMenuLink\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">Connected to "+await getNetworkName()+"</a><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuLink\"><li><p>Network ID: +"+await getNetworkId()+"+</p></li><li><p>Chain ID: "+await getChainId()+"</p></li><li><p>Account: "+await getAccount()+"</p></li><li><p>Balance:"+await getBalance()+"</p></li></ul></div>"//"<p>Connected to "+await getNetworkName()+"</p>"
     ethBalance.innerText =  await getBalance()
-    const address =  getAccount()
-    setTokenDisplay( await address)
+    const address =  await getAccount()
+    setTokenDisplay(address)
     //setTokenDisplay("0xA69E6a7FE3461961AC77a966A19228A9BD1A256e")
     console.log(chainId)
     console.log('Metamask Connected:', ethereum.isConnected())
+    printVersion()
 })
 
 // event triggered when metamask is disconnected from chain and can not make rpc request
@@ -242,25 +262,39 @@ ethereum.on('disconnect', (chainId) => {
 
 //  DISPLAY ELEMENTS //
 //displays NFTs as card elements (note : add scrollable, max height etc ..)
-function setTokenDisplay(user){
-    getABI().then(async (contractABI)=>{
+async function setTokenDisplay(user){
+    console.log(favoriteList)
+    return getABI().then(async (contractABI)=>{
         var html=""
+        var printed 
         const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
         const uriList= await daiContract.getURIList(user)
         const tokenBalance=await getTokenBalance(user)
-        for (let i=0;i< tokenBalance; i++){
+        //look through all our token to check if there are favorites
+        for (let i=0;i< uriList.length; i++){
             if(uriList[i]!=""){
+                printed=false
                 const json = await (await fetch(uriList[i])).json()
                 console.log(await json.name)
-                html += await "<div class=\"card\" style=\"width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><form action=\"/indexLoggedIn\" method=\"post\"><input type=\"hidden\" name=\"contractAddress\" id=\"contractAddress\" value=\""+daiAddress+"\"><input type=\"hidden\" name=\"tokenId\" id=\"tokenId\" value=\""+i+"\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"\"><img id=\"star\" src=\"img/unactive_star.png\"></button></form></div></div></div>"
-                
-            }
-            
+                console.log("favorite List :"+favoriteList.length)
+                // go through user's favorite tokens
+                for(let j=0;j<favoriteList.length;j++){
+                    console.log("tokenId"+json.tokenId)
+                    console.log("fav tokenId"+favoriteList[j].tokenId)
+                    if(favoriteList[j].tokenId==json.tokenId){
+                        printed=true
+                        html +=  "<div id=\"cardContainer\" class=\"card\" style=\"order:-1000; width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><form action=\"/indexLoggedIn\" method=\"post\"><input type=\"hidden\" name=\"contractAddress\" id=\"contractAddress\" value=\""+daiAddress+"\"><input type=\"hidden\" name=\"tokenId\" id=\"tokenId\" value=\""+i+"\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"active\"><img id=\"star\" src=\"img/star.png\"></button></form></div></div></div>"
+                    } 
+                }      
+                if(printed==false) {
+                    html +=  "<div id=\"cardContainer\" class=\"card\" style=\"width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><form action=\"/indexLoggedIn\" method=\"post\"><input type=\"hidden\" name=\"contractAddress\" id=\"contractAddress\" value=\""+daiAddress+"\"><input type=\"hidden\" name=\"tokenId\" id=\"tokenId\" value=\""+i+"\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"\"><img id=\"star\" src=\"img/unactive_star.png\"></button></form></div></div></div>"
+                }          
+            }   
         }
-        html="<p>You have "+tokenBalance +" NFT<div id=\"displayContainer\" class=\"d-flex flex-row flex-wrap\">" + html + "</div>"
-        tokenDisplay.innerHTML=await html
-        const favButtons =await document.querySelectorAll("#fav-btn")
-        console.log(favButtons.length)
+        html="<div id=\"displayContainer\" class=\"d-flex flex-row flex-wrap\"><button id=\"tokenBalanceUser\" type=\"button\" class=\"btn btn-primary btn-sm\">"+await getTokenBalance(getAccount())+"NFT</button>" + html + "</div>"
+        tokenDisplay.innerHTML= html
+        const favButtons = document.querySelectorAll("#fav-btn")
+        console.log("fav length"+favButtons.length)
         for(let i=0;i<favButtons.length;i++){
             favButtons[i].addEventListener("click",function() {
                 favButtons[i].classList.toggle("active");

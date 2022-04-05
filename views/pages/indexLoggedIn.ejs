@@ -8,7 +8,9 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <link href="/css/indexUserStyle.css" rel="stylesheet">
+    
 </head>
+
 <body class="container">
 
 <header>
@@ -17,52 +19,60 @@
 </header>
 
 <main>
-    <div class="jumbotron">
-        <h1>This is great</h1>
-        <h2>Variable</h2>
+    <div id="welcomeMessage"></div>
 
-        <p>Welcome to templating using EJS</p>
-            <button id="myButton" class="btn btn-primary"">Metamask Installed ?</button>
+    <div class="container-md" id="containerBoard">
+    <div class="button-wrap">
+            <!--<button id="myButton" class="btn btn-primary"">Metamask Installed ?</button>
             <button id="metaBtn" class="btn btn-primary"">Connect to Metamask</button>
-        
-            <button id="mintBtn" class="btn btn-primary" type="submit">MINT</button>
+                !-->
+            <button class="btn btn-primary" type="submit" data-bs-toggle="modal" data-bs-target="#exampleModal">MINT</button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Mint</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    Please validate to mint a token
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="mintBtn" type="button" class="btn btn-primary" data-bs-dismiss="modal">Validate</button>
+                    </div>
+                </div>
+                </div>
+            </div>
     
-            <button id="deleteBtn" class="btn btn-primary" type="submit">DELETE</button>
+            
             <button id="transferBtn" class="btn btn-primary" type="submit">TRANSFER</button>
             <button id="printBtn" class="btn btn-primary" type="submit">PRINT</button>
             <button id="printURIBtn" class="btn btn-primary" type="submit">SHOW URIS</button>
-            
+            <button id="deleteBtn" class="btn btn-primary" type="submit">Reset</button>
             
 
 
         
-
-
-
-
-
-
-
-
-
     </div>
+    <div id="dropdownUser"></div>
 
-    <div>
-        <p>Network ID: <span id="networkId"></span></p>
-        <p>Chain ID: <span id="chainId"></span></p>
-        <p>Account: <span id="accountId"></span></p>
-        <p>Balance: <span id="balance"></span></p>
-        <p>Token acquired : <span id="tokenName"></span></p>
-    </div>
-    
-    <button id="connectToWallet">Connect to Metamask</button>
-    <div id="tokenDisplay"></div>
+    <div id="tokenDisplay"></div></div>
 </main>
 
 <footer>
     <%- include('../partials/footer'); %>
 </footer>
 
+
+<% if (favoriteList) { %>
+    <script>
+        
+      var favoriteList = <%- favoriteList %>     
+      //console.log(favoriteList)
+    </script>
+<% } %>
 <script src='/indexLoggedIn.js' ></script>
 </body>
 </html>

@@ -15,6 +15,7 @@
     ],
     "description": "Revengeful cat.",
     "image": "img/darkOrangeCat.png",
-    "name": "Nomis"
+    "name": "Nomis",
+    "tokenId":"1"
   }
   
