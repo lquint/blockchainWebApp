@@ -19,6 +19,7 @@ app.set('view engine', 'ejs');
 // cookie parser middleware
 app.use(cookieParser());
 app.use(express.static('public'));
+app.use(express.json());
 
 
 
@@ -209,16 +210,29 @@ app.post('/register', async (req,res) => {
 
 app.post('/indexLoggedIn', async (req,res) => {
     try{
+        var userFavorites = await dbo.collection("favoriteTokens").find({user:req.session.user})
+        res.json(userFavorites)
+    } catch(err) {
+        console.log(err)
+        res.send("dajzjda")
+    }
+    
+})
+
+app.post('/indexLoggedIn/favUpdate', async (req,res) => {
+    try{
         const favorite = JSON.parse(JSON.stringify(req.body));
         const fav= {user:req.session.user , tokenId: favorite.tokenId, contractAddress: favorite.contractAddress}
         var favoriteDB = await dbo.collection("favoriteTokens").findOne(fav)
         console.log("found"+await favoriteDB)
         if (favoriteDB) {
-            dbo.collection("favoriteTokens").deleteOne(fav)
+            await dbo.collection("favoriteTokens").deleteOne(fav)
         } else {
-            dbo.collection("favoriteTokens").insertOne(fav)
+            await dbo.collection("favoriteTokens").insertOne(fav)
         }
-        res.end()
+        var userFavorites = await dbo.collection("favoriteTokens").find({user:req.session.user}).toArray()
+        console.log(userFavorites)
+        res.json(userFavorites)
     } catch(err) {
         console.log(err)
         res.send("dajzjda")

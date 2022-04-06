@@ -1,10 +1,8 @@
-
-
 //import { ethers } from "ethers";
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner();
 
-const daiAddress = "0x6e4873A6ea59d4Af91EC6ef32307300F8D4728D9";
+const daiAddress = "0x77b60480d5d4dfa050De3C339267b768Cb56C699";
 
 async function getABI(){
     return fetch('/tokenTest.json')
@@ -96,7 +94,7 @@ async function mintFirstNFT(){
             try {
             console.log("CONTRACT ABI !" + contractAbi)
             const daiContract =  await new ethers.Contract(daiAddress, contractAbi.abi, signer);
-            const tx =  daiContract.mintToken("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703",'metadata/nft-metadata.json')
+            const tx =  daiContract.mintToken("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703",'metadata/nft-metadata-darkC.json')
             console.log(`Transaction hash: ${tx.hash}`);
 
             const receipt = await tx.wait();
@@ -283,11 +281,12 @@ async function setTokenDisplay(user){
                     console.log("fav tokenId"+favoriteList[j].tokenId)
                     if(favoriteList[j].tokenId==json.tokenId){
                         printed=true
-                        html +=  "<div id=\"cardContainer\" class=\"card\" style=\"order:-1000; width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><form action=\"/indexLoggedIn\" method=\"post\"><input type=\"hidden\" name=\"contractAddress\" id=\"contractAddress\" value=\""+daiAddress+"\"><input type=\"hidden\" name=\"tokenId\" id=\"tokenId\" value=\""+i+"\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"active\"><img id=\"star\" src=\"img/star.png\"></button></form></div></div></div>"
+                        console.log("bro? it basically never prints ???")
+                        html +=  "<div id=\"cardContainer\" class=\"card\" style=\"order:-1000; width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"active\"><img id=\"star\" src=\"img/star.png\"></button></div></div></div>"
                     } 
                 }      
                 if(printed==false) {
-                    html +=  "<div id=\"cardContainer\" class=\"card\" style=\"width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><form action=\"/indexLoggedIn\" method=\"post\"><input type=\"hidden\" name=\"contractAddress\" id=\"contractAddress\" value=\""+daiAddress+"\"><input type=\"hidden\" name=\"tokenId\" id=\"tokenId\" value=\""+i+"\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"\"><img id=\"star\" src=\"img/unactive_star.png\"></button></form></div></div></div>"
+                    html +=  "<div id=\"cardContainer\" class=\"card\" style=\"width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"\"><img id=\"star\" src=\"img/unactive_star.png\"></button></div></div></div>"
                 }          
             }   
         }
@@ -296,8 +295,48 @@ async function setTokenDisplay(user){
         const favButtons = document.querySelectorAll("#fav-btn")
         console.log("fav length"+favButtons.length)
         for(let i=0;i<favButtons.length;i++){
-            favButtons[i].addEventListener("click",function() {
-                favButtons[i].classList.toggle("active");
+            const json = await (await fetch(uriList[i])).json()
+            favButtons[i].addEventListener("click", async function() {
+                return fetch("/indexLoggedIn/favUpdate", {
+     
+                    // Adding method type
+                    method: "POST",
+                    mode: 'cors',
+                    // Adding body or contents to send
+                    body: JSON.stringify({
+                        contractAddress : daiAddress,
+                        tokenId : json.tokenId
+                    }),
+                     
+                    // Adding headers to the request
+                    headers: {
+                        "Content-type": "application/json"
+                    }
+                })
+                    .then(async function(response) {
+                        
+                        const favList=await response.json()
+                        for( var i = 0; i < uriList.length; i++){ 
+                            let json = await (await fetch(uriList[i])).json()
+                            let favorited = false
+                            for(var j=0;j<favList.length;j++){
+                                console.log("fav list :"+JSON.stringify(favList))
+                                console.log("uri list :"+JSON.stringify(json))
+                                if ( json.tokenId === favList[j].tokenId) { 
+                                    console.log("ETOILE JAUNE !")
+                                    favButtons[i].firstChild.setAttribute("src","img/star.png")
+                                    favButtons[i].parentElement.parentElement.parentElement.setAttribute("style","order:-1000; width: 18rem; ")
+                                    favorited=true
+                                }
+                            }
+                            if (favorited==false){
+                                favButtons[i].firstChild.setAttribute("src","img/unactive_star.png")
+                                favButtons[i].parentElement.parentElement.parentElement.setAttribute("style","order:1000; width: 18rem; ")
+                            }
+                        }
+
+                    })  
+                /*favButtons[i].classList.toggle("active");
                 if(favButtons[i].getAttribute("class")=="active"){
                     favButtons[i].innerHTML="<img src=\"img/star.png\">"
                     favButtons[i].parentElement.parentElement.parentElement.parentElement.setAttribute("style","order:-1000; width: 18rem; ")
@@ -305,7 +344,7 @@ async function setTokenDisplay(user){
                     favButtons[i].innerHTML="<img src=\"img/unactive_star.png\">"
                     console.log(favButtons[i].parentElement.parentElement.parentElement.parentElement.getAttribute("style"))
                     favButtons[i].parentElement.parentElement.parentElement.parentElement.setAttribute("style","order:1000; width: 18rem; ")
-                }
+                }*/
             })
         }
     })

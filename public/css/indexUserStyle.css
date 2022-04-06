@@ -6,7 +6,9 @@
 #connected{background-color: rgb(0, 204, 0);
 border-style: none;}
 
-#cardContainer{
+#displayContainer{
+  min-height: 2em;
+  background-color: rgb(128, 128, 128);
 }
 
 #tokenBalanceUser{

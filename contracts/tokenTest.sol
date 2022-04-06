@@ -5,7 +5,7 @@ import "./interfaceERC721.sol";
 contract tokenTest is tokenData, ERC721, ERC165 {
     
     function getVersion() public pure returns (string memory){
-        return "0.9";
+        return "1.0";
     }
 
     function getName() public pure returns (string memory){
@@ -127,11 +127,10 @@ contract tokenTest is tokenData, ERC721, ERC165 {
         for (uint i= tokenList.length; i>0; i--){
             tokenList.pop();
             delete tokenURIs[i];
-            tokenBalance[to] -=1 ;
             delete tokenOwner[i];
         }
+        tokenBalance[to] =0 ;
         delete tokenCollection[to];
-        
     }
 
     function getURIs(address owner) public view returns(string memory){
