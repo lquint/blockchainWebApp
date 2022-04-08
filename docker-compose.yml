@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo:4.0-xenial
+    container_name: my-mongodb
+    hostname: mongo
+    ports:
+      - "27017:27017"
+    expose:
+      - 27017
+  my-website:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-website
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000

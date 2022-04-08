@@ -11,6 +11,14 @@ border-style: none;}
   background-color: rgb(128, 128, 128);
 }
 
+.transferContainer{
+  display:flex;
+}
+
+#transferAddress{
+  width:30em;
+}
+
 #tokenBalanceUser{
   position:absolute;
   align-self: end;

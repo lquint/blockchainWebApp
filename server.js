@@ -5,14 +5,11 @@ const bcrypt = require('bcrypt')
 const bodyParser=require('body-parser')
 const cookieParser = require("cookie-parser");
 const session = require('express-session')
-const ethers = require('ethers');  
-const BigNumber = require('bignumber.js');
 const req = require('express/lib/request')
 require("dotenv").config();
-const endpoint = `https://rinkeby.infura.io/v3/${process.env.INFURIA_KEY}`;
 
 app.use(bodyParser.urlencoded({ extended: false }));
-const url = "mongodb://localhost:27017/";
+const url = "mongodb://mongodb:27017/scoobido"; 
 let dbo;
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -55,6 +52,11 @@ function setDB(){
         console.log("Users created!");
         
       });
+    dbo.createCollection("favoriteTokens", function(err, res) {
+        if (err) throw err;
+        console.log("Users created!");
+        
+    });
 }
 
 
@@ -63,6 +65,7 @@ function setDB(){
 MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     dbo = db.db("mydb");
+    //setDB()
     console.log("connected to our DB !")
     });
 
@@ -200,10 +203,11 @@ app.post('/register', async (req,res) => {
         } else {
             res.send('Passwords do not match')
         }
-    } catch {
+    } catch (err){
+        console.log(err)
         res.status(500).send()
-        const user= {name:obj.name , password: hashedPassword}
-        dbo.collection("customers").insertOne(user)
+        //const user= {name:obj.name , password: hashedPassword}
+        //dbo.collection("customers").insertOne(user)
     }
     
 })

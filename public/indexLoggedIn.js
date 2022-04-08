@@ -17,12 +17,17 @@ const tokenDescription= document.getElementById("tokenDescription")
 const tokenDisplay = document.getElementById("tokenDisplay")
 const welcomeMessage= document.getElementById("welcomeMessage")
 const dropdownUser = document.getElementById("dropdownUser")
+const randomGuyAddress = document.getElementById("sendToRandom")
+const transferAddress= document.getElementById("transferAddress")
 let network = document.getElementById('networkId')
 let chainId = document.getElementById('chainId')
 let account = document.getElementById('accountId')
 let balance = document.getElementById('balance')
 const ethBalance = document.getElementById('ethBalance')
+const mintSelect= document.getElementById('mintSelect')
 window.onload=async function(){
+    
+
     //var x=document.getElementById('myButton')
     //var y=document.getElementById('metaBtn')
     var tokenMint = document.getElementById('mintBtn')
@@ -31,9 +36,9 @@ window.onload=async function(){
     var tokenPrintURI = document.getElementById('printURIBtn')
     var tokenTransfer = document.getElementById('transferBtn')
     if(!ethereum.isConnected){
+        console.log("not connected to metamask yet")
         welcomeMessage.innerHTML="<p>Please install and connect to Metamask to have access to your data</p>"
         dropdownUser.innerHTML=""
-
     } else {
         welcomeMessage.innerHTML=""//"<p>Connected to "+await getNetworkName()+"</p>"
     }
@@ -42,11 +47,28 @@ window.onload=async function(){
     // add click event listener on the connect button
     //x.addEventListener("click", metamaskInstalled)
     //y.addEventListener("click", getAccount)
-    tokenMint.addEventListener("click", mintFirstNFT)
+    randomGuyAddress.addEventListener("click", async function(){
+        try{
+            console.log(transferAddress.getAttributeNames())
+            transferAddress.setAttribute("value","0xA69E6a7FE3461961AC77a966A19228A9BD1A256e")
+        } catch (err){
+            console.log(err)
+        }
+       
+    })
+    tokenMint.addEventListener("click", function(){
+        const tokenId=mintSelect.value
+        console.log("select ID : "+tokenId)
+        mintFirstNFT(tokenId)
+    })
     tokenDelete.addEventListener("click", deleteUserNFT)
     tokenPrint.addEventListener("click", printTokenId)
     tokenPrintURI.addEventListener("click",printTokenURIs)
-    tokenTransfer.addEventListener("click",function() { transferNFT("0xA69E6a7FE3461961AC77a966A19228A9BD1A256e") } )
+    tokenTransfer.addEventListener("click",function() { 
+        console.log(transferAddress.getAttribute("value"))
+        transferNFT(transferAddress.getAttribute("value")) 
+        transferAddress.innerText=""
+    })
     
 
     
@@ -83,7 +105,7 @@ async function getNetworkName(){
 
 // modify NFT property
 
-async function mintFirstNFT(){
+async function mintFirstNFT(tokenId){
 
     
     await provider.send("eth_requestAccounts", []);
@@ -92,12 +114,18 @@ async function mintFirstNFT(){
         var contractAbi
         getABI().then( async (contractAbi) =>{
             try {
+                var tokenURI
+            if(tokenId==0){
+                tokenURI='metadata/nft-metadata.json'
+            }
+            if(tokenId==1){
+                tokenURI='metadata/nft-metadata-darkC.json'
+            }
+            console.log("tu as lu mon affectation ?"+ tokenURI)
             console.log("CONTRACT ABI !" + contractAbi)
             const daiContract =  await new ethers.Contract(daiAddress, contractAbi.abi, signer);
-            const tx =  daiContract.mintToken("0xe8F93a2a3B260341bb0bD6d951478cDc56faa703",'metadata/nft-metadata-darkC.json')
+            const tx =  daiContract.mintToken(await getAccount(),tokenURI)
             console.log(`Transaction hash: ${tx.hash}`);
-
-            const receipt = await tx.wait();
             console.log(`Transaction confirmed in block ${receipt.blockNumber}`);
             console.log(`Gas used: ${receipt.gasUsed.toString()}`);
              }catch (err){
@@ -124,8 +152,17 @@ async function transferNFT(to){
     
     await provider.send("eth_requestAccounts", []);
     getABI().then(async (contractABI)=>{
-        const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
-        const tx =  daiContract.transferFrom(getAccount(),to,1)
+        try{
+            const daiContract = await new ethers.Contract(daiAddress, contractABI.abi, signer);
+            const tx =  await daiContract.transferFrom(getAccount(),to,1)
+        }
+        catch (err){
+            if(err.code==4001){
+                alert("You canceled the transaction")
+            }
+            else{alert("Invalid Address")}
+            
+        }
     })
     
 }
@@ -240,7 +277,7 @@ ethereum.on('accountsChanged', async (accounts) => {
 
 // event triggered when metamask is connected to chain and can make rpc request
 ethereum.on('connect', async () => {
-    dropdownUser.innerHTML="<div class=\"dropdown\"><a id=\"connected\" class=\"btn btn-secondary dropdown-toggle\" href=\"#\" role=\"button\" id=\"dropdownMenuLink\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">Connected to "+await getNetworkName()+"</a><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuLink\"><li><p>Network ID: +"+await getNetworkId()+"+</p></li><li><p>Chain ID: "+await getChainId()+"</p></li><li><p>Account: "+await getAccount()+"</p></li><li><p>Balance:"+await getBalance()+"</p></li></ul></div>"//"<p>Connected to "+await getNetworkName()+"</p>"
+    dropdownUser.innerHTML="<div class=\"dropdown\"><a id=\"connected\" class=\"btn btn-secondary dropdown-toggle\" href=\"#\" role=\"button\" id=\"dropdownMenuLink\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">Connected to "+await getNetworkName()+"</a><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuLink\"><li><p>Network ID: "+await getNetworkId()+"</p></li><li><p>Chain ID: "+await getChainId()+"</p></li><li><p>Account: "+await getAccount()+"</p></li><li><p>Balance:"+await getBalance()+"</p></li></ul></div>"//"<p>Connected to "+await getNetworkName()+"</p>"
     ethBalance.innerText =  await getBalance()
     const address =  await getAccount()
     setTokenDisplay(address)
@@ -281,7 +318,6 @@ async function setTokenDisplay(user){
                     console.log("fav tokenId"+favoriteList[j].tokenId)
                     if(favoriteList[j].tokenId==json.tokenId){
                         printed=true
-                        console.log("bro? it basically never prints ???")
                         html +=  "<div id=\"cardContainer\" class=\"card\" style=\"order:-1000; width: 18rem; \" > <img src= \""+json.image+"\" class=\"card-img-top\" alt=\"...\"> <div class=\"card-body\"> <h5 class=\"card-title\">"+json.name+"</h5><p class=\"card-text\">" + json.description + "<div class=\"minicontainer\"><button type=\"submit\" value=\"Favorite\" id=\"fav-btn\" name=\"submit\" class=\"active\"><img id=\"star\" src=\"img/star.png\"></button></div></div></div>"
                     } 
                 }      
