@@ -9,9 +9,10 @@ services:
     expose:
       - 27017
   my-website:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    #build:
+    # context: .
+    #  dockerfile: Dockerfile
+    image: lquint/blockchain-web-app:latest
     container_name: my-website
     depends_on:
       - mongodb

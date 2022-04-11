@@ -7,9 +7,26 @@ const cookieParser = require("cookie-parser");
 const session = require('express-session')
 const req = require('express/lib/request')
 require("dotenv").config();
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('certificate/key.pem'),
+  cert: fs.readFileSync('certificate/cert.pem')
+};
+
+const sslServer = https.createServer(
+    {
+        key: options.key,
+        cert: options.cert,
+    },
+    app
+)
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
-const url = "mongodb://mongodb:27017/scoobido"; 
+const url = "mongodb://localhost:27017"; 
+//const url = "mongodb://mongodb:27017/scoobido"; 
 let dbo;
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -245,6 +262,7 @@ app.post('/indexLoggedIn/favUpdate', async (req,res) => {
 })
 
 app.listen(3000) 
+sslServer.listen(3443,(req,res)=> console.log("Secure server created!"))
 
 /*
 dbo.collection("customers").insertMany(getDatas(), function(err, res) {

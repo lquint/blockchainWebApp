@@ -50,7 +50,8 @@ window.onload=async function(){
     randomGuyAddress.addEventListener("click", async function(){
         try{
             console.log(transferAddress.getAttributeNames())
-            transferAddress.setAttribute("value","0xA69E6a7FE3461961AC77a966A19228A9BD1A256e")
+            //transferAddress.setAttribute("value","0xA69E6a7FE3461961AC77a966A19228A9BD1A256e")
+            transferAddress.value="0xA69E6a7FE3461961AC77a966A19228A9BD1A256e"
         } catch (err){
             console.log(err)
         }
